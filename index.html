@@ -1,0 +1,686 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>Biologie Lernkartei + Strukturabfrage (Neuro, Fotosynthese, Zellen)</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            background: linear-gradient(145deg, #e0eafc 0%, #cfdef3 100%);
+            font-family: 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif;
+            padding: 2rem 1rem;
+            min-height: 100vh;
+        }
+
+        .app-container {
+            max-width: 1500px;
+            margin: 0 auto;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        h1 {
+            font-size: 2.2rem;
+            background: linear-gradient(135deg, #1a3c34, #2b5e4c);
+            background-clip: text;
+            -webkit-background-clip: text;
+            color: transparent;
+            text-shadow: 2px 2px 8px rgba(0,0,0,0.05);
+        }
+
+        .sub {
+            color: #2d4a3b;
+            font-weight: 500;
+            margin-top: 0.25rem;
+        }
+
+        .stats-bar {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            align-items: center;
+            background: white;
+            border-radius: 60px;
+            padding: 0.6rem 1.5rem;
+            margin: 1.5rem 0 1rem;
+            box-shadow: 0 6px 14px rgba(0,0,0,0.08);
+        }
+
+        .card-counter {
+            background: #1e4a3b;
+            color: white;
+            padding: 0.25rem 1rem;
+            border-radius: 30px;
+            font-weight: bold;
+        }
+
+        .progress-text {
+            font-weight: 600;
+            color: #1e3b2f;
+        }
+
+        button {
+            background: #f5f7fa;
+            border: none;
+            font-weight: 600;
+            padding: 0.5rem 1.2rem;
+            border-radius: 40px;
+            cursor: pointer;
+            transition: 0.2s;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            font-size: 0.9rem;
+        }
+
+        button.primary {
+            background: #2c6e4f;
+            color: white;
+        }
+
+        button.primary:hover {
+            background: #1d5a3f;
+            transform: scale(0.97);
+        }
+
+        button.danger {
+            background: #bc8f8f;
+            color: white;
+        }
+
+        button.danger:hover {
+            background: #a16e6e;
+        }
+
+        .filter-buttons {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin: 1rem 0;
+            justify-content: center;
+        }
+
+        .filter-btn {
+            background: #e9ecef;
+            color: #2c3e2f;
+        }
+
+        .filter-btn.active {
+            background: #2c6e4f;
+            color: white;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+        }
+
+        .two-columns {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 2rem;
+            margin-top: 1.5rem;
+        }
+
+        .cards-column {
+            flex: 2;
+            min-width: 320px;
+        }
+
+        .structure-column {
+            flex: 1.2;
+            min-width: 320px;
+            background: #fefefe;
+            border-radius: 48px;
+            box-shadow: 0 20px 30px -12px rgba(0, 0, 0, 0.2);
+            padding: 1.5rem;
+            align-self: start;
+            position: sticky;
+            top: 1rem;
+        }
+
+        .structure-title {
+            font-size: 1.6rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            color: #1f5e44;
+            border-left: 6px solid #2c6e4f;
+            padding-left: 1rem;
+        }
+
+        .structure-image-container {
+            background: #f0f4f0;
+            border-radius: 32px;
+            padding: 1rem;
+            margin-bottom: 1.5rem;
+            text-align: center;
+        }
+
+        .structure-image {
+            max-width: 100%;
+            border-radius: 24px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            background: white;
+        }
+
+        .quiz-status {
+            margin-top: 1rem;
+            background: #e9f3ef;
+            border-radius: 32px;
+            padding: 1rem;
+            text-align: center;
+        }
+
+        .question-label {
+            font-weight: bold;
+            background: #1e4a3b;
+            display: inline-block;
+            color: white;
+            padding: 0.2rem 1rem;
+            border-radius: 40px;
+            margin-bottom: 0.8rem;
+        }
+
+        .structure-question {
+            font-size: 1.2rem;
+            font-weight: 600;
+            margin: 0.8rem 0;
+        }
+
+        .answer-input-area {
+            display: flex;
+            gap: 8px;
+            margin: 1rem 0;
+            flex-wrap: wrap;
+        }
+
+        #structureAnswerInput {
+            flex: 1;
+            padding: 0.7rem 1rem;
+            border-radius: 60px;
+            border: 1px solid #ccc;
+            font-size: 1rem;
+        }
+
+        .feedback {
+            font-weight: 500;
+            margin-top: 0.5rem;
+            min-height: 3rem;
+        }
+
+        .correct-feedback {
+            color: #1f7840;
+        }
+
+        .wrong-feedback {
+            color: #b33;
+        }
+
+        .next-structure-btn {
+            background: #2c6e4f;
+            color: white;
+            width: 100%;
+            margin-top: 0.8rem;
+        }
+
+        .structure-selector {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+            margin-bottom: 1rem;
+            justify-content: center;
+        }
+
+        .struct-select-btn {
+            background: #e2e8f0;
+            font-size: 0.8rem;
+            padding: 0.4rem 0.8rem;
+        }
+
+        .struct-select-btn.active-struct {
+            background: #2c6e4f;
+            color: white;
+        }
+
+        .cards-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(360px, 1fr));
+            gap: 1.8rem;
+        }
+
+        .flashcard {
+            background: white;
+            border-radius: 32px;
+            box-shadow: 0 20px 30px -12px rgba(0, 0, 0, 0.2);
+            transition: all 0.25s ease;
+            cursor: pointer;
+            overflow: hidden;
+            min-height: 360px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .flashcard:hover {
+            transform: translateY(-6px);
+        }
+
+        .card-inner {
+            padding: 1.8rem;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            background: #ffffff;
+        }
+
+        .card-category {
+            display: inline-block;
+            background: #e6f4ea;
+            color: #1f5e44;
+            font-size: 0.7rem;
+            font-weight: bold;
+            letter-spacing: 1px;
+            padding: 0.2rem 0.8rem;
+            border-radius: 30px;
+            width: fit-content;
+            margin-bottom: 1rem;
+            text-transform: uppercase;
+        }
+
+        .question-area {
+            font-size: 1.45rem;
+            font-weight: 700;
+            line-height: 1.4;
+            margin-bottom: 1.2rem;
+            color: #1f2f2a;
+        }
+
+        .answer-area {
+            background: #f8f9fc;
+            border-left: 5px solid #2c6e4f;
+            padding: 1rem;
+            border-radius: 18px;
+            margin: 0.8rem 0;
+            font-size: 1rem;
+            color: #1e2f28;
+            line-height: 1.5;
+            white-space: pre-wrap;
+            max-height: 280px;
+            overflow-y: auto;
+        }
+
+        .show-answer-btn {
+            background: #ecf7f1;
+            border: none;
+            padding: 0.3rem 1rem;
+            border-radius: 50px;
+            font-weight: 500;
+            margin-top: 0.5rem;
+            cursor: pointer;
+        }
+
+        .card-footer {
+            margin-top: 1rem;
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.75rem;
+            color: #6c757d;
+            border-top: 1px solid #ecf0f1;
+            padding-top: 0.8rem;
+        }
+
+        @media (max-width: 900px) {
+            .two-columns {
+                flex-direction: column;
+            }
+            .structure-column {
+                position: static;
+            }
+        }
+    </style>
+</head>
+<body>
+<div class="app-container">
+    <div class="header">
+        <h1>🧬 Biologie Lernkartei + Strukturabfrage</h1>
+        <div class="sub">Karteikarten: Zellbiologie · Stoffwechsel · Genetik · Ökologie · Evolution · Neurobiologie</div>
+    </div>
+    <div class="stats-bar">
+        <span class="card-counter" id="cardCountDisplay">0 Karten</span>
+        <span class="progress-text">📖 Karte antippen → Antwort zeigen</span>
+        <button id="resetAllBtn" class="danger">🔄 Alle Karten zurücksetzen</button>
+    </div>
+    <div class="filter-buttons" id="filterContainer">
+        <button data-filter="all" class="filter-btn active">📚 Alle Themen</button>
+        <button data-filter="Zellbiologie" class="filter-btn">🧬 Zellbiologie</button>
+        <button data-filter="Stoffwechsel" class="filter-btn">⚡ Stoffwechsel</button>
+        <button data-filter="Genetik" class="filter-btn">🧬 Genetik</button>
+        <button data-filter="Ökologie" class="filter-btn">🌿 Ökologie</button>
+        <button data-filter="Evolution" class="filter-btn">🐒 Evolution</button>
+        <button data-filter="Neurobiologie" class="filter-btn">🧠 Neurobiologie</button>
+    </div>
+
+    <div class="two-columns">
+        <!-- Linke Spalte: Karteikarten -->
+        <div class="cards-column">
+            <div id="cardsContainer" class="cards-grid"></div>
+        </div>
+
+        <!-- Rechte Spalte: Strukturabfrage mit echten Bildern (externe URLs) -->
+        <div class="structure-column">
+            <div class="structure-title">🔬 Biologische Strukturen</div>
+            <div class="structure-selector" id="structureSelector">
+                <button data-struct-id="neuron" class="struct-select-btn active-struct">🧠 Neuron</button>
+                <button data-struct-id="chloroplast" class="struct-select-btn">🌿 Chloroplast</button>
+                <button data-struct-id="mitochondrium" class="struct-select-btn">⚡ Mitochondrium</button>
+                <button data-struct-id="blatt" class="struct-select-btn">🍃 Blattquerschnitt</button>
+            </div>
+            <div class="structure-image-container">
+                <img id="structureImage" class="structure-image" src="https://upload.wikimedia.org/wikipedia/commons/thumb/a/a9/Neuron_Hand-tuned.svg/800px-Neuron_Hand-tuned.svg.png" alt="Biologische Struktur">
+            </div>
+            <div class="quiz-status">
+                <div class="question-label">🔍 ABFRAGE: Beschrifte die markierte Struktur</div>
+                <div class="structure-question" id="structureQuestion">Welche Struktur ist hier markiert? (Tipp: Es ist ein Teil des Neurons)</div>
+                <div class="answer-input-area">
+                    <input type="text" id="structureAnswerInput" placeholder="z. B. Zellkern, Dendrit, Thylakoid..." autocomplete="off">
+                    <button id="checkStructureBtn" class="primary">✔️ Prüfen</button>
+                </div>
+                <div id="structureFeedback" class="feedback"></div>
+                <button id="nextStructureBtn" class="next-structure-btn">🎲 Nächste Struktur</button>
+            </div>
+            <div style="margin-top: 1rem; font-size: 0.75rem; background:#f3f6fc; border-radius: 24px; padding: 0.8rem; text-align:center;">
+                💡 <strong>Hinweis:</strong> Wähle ein Thema oben aus. Die Antwort wird nicht direkt gezeigt – du musst sie eingeben!
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // ===================== VOLLSTÄNDIGE LERNDATENBANK (KARTEIKARTEN) =====================
+    // ===================== VOLLSTÄNDIGE LERNDATENBANK (ALLE INHALTE AUS DEM PDF) =====================
+    const flashcardsData = [
+      // ===================== ZELLBIOLOGIE =====================
+      { category: "Zellbiologie", question: "Welche Funktion hat der Zellkern?", answer: "Enthält die DNA in Form von Chromosomen. Steuert alle Zellfunktionen als Kontrollzentrum." },
+      { category: "Zellbiologie", question: "Wofür sind Ribosomen zuständig?", answer: "Für die Produktion von Proteinen (Proteinbiosynthese). Sie liegen frei im Cytoplasma oder am rauen Endoplasmatischen Retikulum." },
+      { category: "Zellbiologie", question: "Mitochondrium – Bedeutung & Aufbau", answer: "Kraftwerk der Zelle, Ort der Zellatmung und ATP-Synthese. Doppelmembran, innere Membran mit Cristae (Oberflächenvergrößerung), Matrix enthält mtDNA und Ribosomen." },
+      { category: "Zellbiologie", question: "Endoplasmatisches Retikulum (ER) – Unterschied raues vs. glattes ER", answer: "Rau: Proteinbiosynthese (durch Ribosomen). Glatt: Beteiligt an Stoffwechselprozessen (Lipidsynthese, Entgiftung, Calcium-Speicherung)." },
+      { category: "Zellbiologie", question: "Golgi-Apparat – Aufgabe", answer: "Verarbeitung, Modifikation und Verpackung von Proteinen. Sortiert Stoffe für den Transport innerhalb und außerhalb der Zelle." },
+      { category: "Zellbiologie", question: "Lysosom – Funktion", answer: "Enthält Verdauungsenzyme (Hydrolasen). Abbau von Fremdstoffen, beschädigten Organellen und Makromolekülen." },
+      { category: "Zellbiologie", question: "Warum besitzen Muskelzellen besonders viele Mitochondrien?", answer: "Sie haben den höchsten Energiebedarf (ATP) pro Volumeneinheit aufgrund ihrer Kontraktionsarbeit." },
+      { category: "Zellbiologie", question: "Was besagt die Endosymbiontentheorie bezüglich Mitochondrien?", answer: "Mitochondrien entstanden aus ehemals freien, aeroben Bakterien, die von einer Ur-Eukaryotenzelle aufgenommen wurden – daher eigene DNA und Ribosomen." },
+      { category: "Zellbiologie", question: "Welche drei Kriterien verwendet man für Homologie?", answer: "Kriterium der Lage (gleiche Position im Körpergefüge), Kriterium der spezifischen Qualität (komplexe Übereinstimmung), Kriterium der Stetigkeit (Verbindung durch Zwischenformen)." },
+      { category: "Zellbiologie", question: "Was ist der Unterschied zwischen Homologie und Analogie?", answer: "Homologie = Merkmale mit gleichem evolutionärem Ursprung (divergente Entwicklung). Analogie = Merkmale mit gleicher Funktion, aber unterschiedlichem Ursprung (konvergente Evolution)." },
+
+      // ===================== STOFFWECHSEL (Zellatmung, Gärung, Regulation) =====================
+      { category: "Stoffwechsel", question: "Definition Oxidation & Reduktion (Redoxreaktion)", answer: "Oxidation = Abgabe von Elektronen (oder Wasserstoffatomen). Reduktion = Aufnahme von Elektronen. Beide sind stets gekoppelt." },
+      { category: "Stoffwechsel", question: "Rolle von NAD+ im Stoffwechsel", answer: "NAD+ ist ein zentrales Reduktionsäquivalent. Es nimmt Wasserstoff auf (→ NADH+H+) und gibt ihn weiter. Glucose wird oxidiert, Sauerstoff wird reduziert." },
+      { category: "Stoffwechsel", question: "ATP – universeller Energieträger – wie wird er gebildet?", answer: "Bei exergonen Reaktionen wird Energie genutzt, um ADP + P zu ATP zu phosphorylieren. ATP kann Phosphatgruppen auf andere Moleküle übertragen (z.B. Glucose → Glucose-6-phosphat)." },
+      { category: "Stoffwechsel", question: "Glykolyse – Ort, Start- und Endprodukt sowie Netto-Ausbeute", answer: "Ort: Cytoplasma. Start: 1 Glucose (C6). Endprodukt: 2 Pyruvat (C3). Netto: 2 ATP, 2 NADH+H+, 2 H2O." },
+      { category: "Stoffwechsel", question: "Citratzyklus – wo findet er statt und Bilanz pro Glucose?", answer: "Ort: Mitochondrienmatrix. Bilanz pro Glucose (2x Durchlauf): 6 CO2, 2 ATP, 8 NADH+H+, 2 FADH2." },
+      { category: "Stoffwechsel", question: "Atmungskette – ATP-Ausbeute pro NADH und pro FADH2", answer: "Pro NADH+H+: 3 ATP (3 H+). Pro FADH2: 2 ATP (2 H+). Gesamt aus Atmungskette: ca. 34 ATP." },
+      { category: "Stoffwechsel", question: "Gesamtbilanz des aeroben Stoffwechsels (1 Glucose)", answer: "38 ATP + 12 H2O + 6 CO2. Reaktionsgleichung: C6H12O6 + 6 O2 → 6 CO2 + 6 H2O + 38 ATP." },
+      { category: "Stoffwechsel", question: "Alkoholische Gärung vs. Milchsäuregärung – Gemeinsamkeit und Unterschied", answer: "Gemeinsam: Regeneration von NAD+, nur 2 ATP aus Glykolyse. Alkoholisch: Pyruvat → Acetaldehyd + CO2 → Ethanol. Milchsäure: Pyruvat → Lactat (kein CO2)." },
+      { category: "Stoffwechsel", question: "Was ist der Pasteur-Effekt?", answer: "Bei Anwesenheit von Sauerstoff wird die Gärung gehemmt; die Zellatmung ist effizienter und unterdrückt die Gärung." },
+      { category: "Stoffwechsel", question: "Wie wird die Phosphofructokinase (Schlüsselenzym der Glykolyse) reguliert?", answer: "ATP als Inhibitor (allosterische Endprodukthemmung). ADP als Aktivator. Je mehr ATP, desto weniger ADP – und umgekehrt." },
+      { category: "Stoffwechsel", question: "Was versteht man unter Grundumsatz, Arbeitsumsatz und Gesamtumsatz beim Menschen?", answer: "Grundumsatz: Energie im Ruhezustand. Arbeitsumsatz: Energie über Grundumsatz hinaus. Gesamtumsatz = Grundumsatz + Arbeitsumsatz." },
+      { category: "Stoffwechsel", question: "Wie kann der Energieumsatz indirekt gemessen werden?", answer: "Indirekte Kalorimetrie über den Sauerstoffverbrauch: E = V(O2) · 21 kJ/l." },
+
+      // ===================== GENETIK (DNA, Replikation, Proteinbiosynthese, Operon, CRISPR) =====================
+      { category: "Genetik", question: "DNA – Nennen Sie die Basenpaarung und die Chargaff-Regel.", answer: "Adenin (A) paart mit Thymin (T) durch 2 Wasserstoffbrücken, Guanin (G) mit Cytosin (C) durch 3 Wasserstoffbrücken. Chargaff-Regel: A = T und G = C, immer gleicher prozentualer Anteil." },
+      { category: "Genetik", question: "Ablauf der DNA-Replikation – welche Enzyme sind beteiligt?", answer: "Helikase (Trennung), Primase (RNA-Primer), DNA-Polymerase (Synthese in 5‘→3‘-Richtung), DNA-Ligase (Verknüpfung der Okazaki-Fragmente am Folgestrang)." },
+      { category: "Genetik", question: "Was beweist das Meselson-Stahl-Experiment (1958)?", answer: "Es beweist die semikonservative Replikation: Jeder neue DNA-Doppelstrang besteht aus einem alten (elterlichen) und einem neu synthetisierten Strang." },
+      { category: "Genetik", question: "Nennen und erklären Sie vier Mutationstypen.", answer: "Stumme Mutation (gleiche AS), Missense-Mutation (falsche AS), Nonsense-Mutation (Stop-Codon → Abbruch), Rastermutation (Deletion/Insertion → Leseraster verschoben)." },
+      { category: "Genetik", question: "Was besagt das Operon-Modell (z.B. beim Lac-Operon)?", answer: "Regulator – Promotor – Operator – Strukturgene. Endproduktrepression: Endprodukt bindet Repressor → blockiert Operator. Substratinduktion: Substrat bindet Repressor → inaktiv → Operator frei." },
+      { category: "Genetik", question: "Epigenetik – zwei wichtige Mechanismen", answer: "1. DNA-Methylierung (Cytosin → Methylierung verdichtet Nukleosomen → keine Transkription). 2. Histon-Acetylierung (lockert Histonkomplex → Transkription möglich)." },
+      { category: "Genetik", question: "CRISPR/Cas9 – natürliche Funktion und Anwendung", answer: "Natürlich: bakterielles Immunsystem gegen Viren. Anwendung: gezielte Genom-Editierung (Genschere) zum Schneiden und Verändern von DNA." },
+      { category: "Genetik", question: "Mitose – Phasen und Ergebnis", answer: "Prophase, Prometaphase, Metaphase, Anaphase, Telophase + Cytokinese. Ergebnis: 2 identische diploide Tochterzellen." },
+      { category: "Genetik", question: "Meiose – Ziel und Besonderheit", answer: "Bildung haploider Keimzellen (Gameten). Besonderheit: Crossing-over in Prophase I (Austausch genetischer Information zwischen homologen Chromosomen)." },
+      { category: "Genetik", question: "Hardy-Weinberg-Gesetz – Formel und Bedingungen", answer: "Allelhäufigkeit: p + q = 1. Genotyphäufigkeit: p² + 2pq + q² = 1. Bedingungen: sehr große Population, keine Mutation, keine Selektion, kein Genfluss, zufällige Paarung." },
+
+      // ===================== ÖKOLOGIE (Ökosysteme, Kreisläufe, Räuber-Beute) =====================
+      { category: "Ökologie", question: "Definition Ökosystem, Biotop, Biozönose", answer: "Ökosystem = Biotop (Lebensraum) + Biozönose (Artengemeinschaft). Biotop: abiotische Faktoren. Biozönose: biotische Faktoren." },
+      { category: "Ökologie", question: "Lotka-Volterra-Regeln (Räuber-Beute-Beziehung) – nennen Sie die drei Regeln.", answer: "1. Periodische Schwankungen. 2. Konstante Mittelwerte (Beute > Räuber). 3. Beute erholt sich nach Reduktion schneller." },
+      { category: "Ökologie", question: "Positive vs. negative Rückkopplung – Beispiele", answer: "Positiv: Verstärkung (je mehr, desto mehr). Negativ: Stabilisierung (je mehr, desto weniger) – z.B. Räuber-Beute." },
+      { category: "Ökologie", question: "Kohlenstoffkreislauf – wichtigste Prozesse", answer: "Fotosynthese bindet CO2 (Pflanzen). Zellatmung und Destruenten geben CO2 wieder frei. Verbrennung fossiler Brennstoffe stört das Gleichgewicht." },
+      { category: "Ökologie", question: "Temperaturtoleranz – Unterschied euryök und stenök", answer: "Euryök: breite ökologische Toleranz (anpassungsfähig). Stenök: enge Toleranz (empfindlich)." },
+      { category: "Ökologie", question: "Gleichwarme (endotherme) vs. wechselwarme (ektotherme) Tiere – Anpassungen", answer: "Gleichwarm: Fell/Federn, Schwitzen, Muskelzittern. Wechselwarm: Kälte-/Hitzestarre, bilden Frostschutzmittel, niedrigere Stoffwechselrate." },
+      { category: "Ökologie", question: "Bergmannsche und Allensche Regel", answer: "Bergmann: In Kälte größere Körper (kleineres O/V-Verhältnis). Allen: Körperanhänge (Ohren, Gliedmaßen) in Kälte kleiner." },
+      { category: "Ökologie", question: "Konkurrenzausschlussprinzip (Gause’sches Prinzip)", answer: "Zwei Arten mit gleicher ökologischer Nische können nicht dauerhaft koexistieren. Eine Art wird verdrängt oder es kommt zur Nischenaufteilung." },
+      { category: "Ökologie", question: "Was ist eine Mykorrhiza?", answer: "Symbiose zwischen Pilzen (Myzel) und Pflanzenwurzeln. Pilz vergrößert Wurzeloberfläche (Wasser/Mineralsalze), Pflanze liefert energiereiche Stoffe." },
+
+      // ===================== EVOLUTION (Selektion, Artbildung, Homologie, Adaptive Radiation) =====================
+      { category: "Evolution", question: "Synthetische Evolutionstheorie – was verbindet sie?", answer: "Sie verbindet Darwins natürliche Selektion mit der Genetik (Mendel) und der Populationsökologie." },
+      { category: "Evolution", question: "Homologie vs. Analogie – Definition mit Beispiel", answer: "Homologie: gleicher Ursprung (z.B. Arm des Menschen, Flosse des Wals). Analogie: gleiche Funktion (z.B. Flosse Wal vs. Flosse Hai)." },
+      { category: "Evolution", question: "Was ist adaptive Radiation? Nennen Sie ein Beispiel.", answer: "Aus einer Stammart entstehen durch Anpassung an verschiedene ökologische Nischen viele neue Arten. Beispiel: Darwinfinken auf den Galapagosinseln." },
+      { category: "Evolution", question: "Allopatrische, sympatrische und parapatrische Artbildung – Unterschied", answer: "Allopatrisch: räumliche Trennung (Barriere). Sympatrisch: ohne räumliche Trennung (z.B. Polyploidie). Parapatrisch: Teilpopulationen in angrenzenden Gebieten mit unterschiedlichem Selektionsdruck." },
+      { category: "Evolution", question: "Präzygotische vs. postzygotische Isolationsmechanismen – Beispiele", answer: "Präzygotisch: mechanisch, zeitlich, ethologisch, ökologisch, gametisch. Postzygotisch: verringerte Lebensfähigkeit der Zygote, geringere Überlebenschance der Bastarde, Sterilität (z.B. Maultier)." },
+      { category: "Evolution", question: "Was ist sexuelle Selektion? Unterschied zur natürlichen Selektion?", answer: "Sexuelle Selektion fördert Merkmale, die den Fortpflanzungserfolg steigern (auch wenn sie das Überleben erschweren). Natürliche Selektion fördert Überlebensmerkmale." },
+      { category: "Evolution", question: "RGT-Regel (Q10-Regel) – Aussage", answer: "Eine Temperaturerhöhung um 10°C steigert die Reaktionsgeschwindigkeit um den Faktor 2–4 (Q10-Wert)." },
+      { category: "Evolution", question: "Präzipitintest – wozu dient er?", answer: "Bestimmung stammesgeschichtlicher Verwandtschaft über Antigen-Antikörper-Reaktion (Proteine). Stärke der Agglutination zeigt Verwandtschaftsgrad." },
+
+      // ===================== NEUROBIOLOGIE (Neuron, Aktionspotential, Synapse, Sinne) =====================
+      { category: "Neurobiologie", question: "Aufbau eines Neurons – nennen Sie die Bestandteile.", answer: "Dendriten (Signalempfang), Soma (Zellkörper), Axonhügel (Integration), Axon (Leitung), Myelinscheide (Saltatorische Leitung), Synapsen (Signalübertragung)." },
+      { category: "Neurobiologie", question: "Ruhepotential – Wie entsteht es (Werte)?", answer: "Durch Kalium-Hintergrundkanäle (K+ diffundiert aus), Natrium-Kalium-Pumpe (3 Na+ raus, 2 K+ rein). Wert etwa -70 mV." },
+      { category: "Neurobiologie", question: "Aktionspotential – Phasen und Ionenbewegungen", answer: "1. Depolarisation (Na+-Einstrom über spannungsgesteuerte Kanäle). 2. Repolarisation (K+-Ausstrom). 3. Hyperpolarisation (kurzzeitig negativer als Ruhepotential)." },
+      { category: "Neurobiologie", question: "Was ist der Schwellenwert beim Aktionspotential?", answer: "Ca. -50 mV. Bei Überschreitung wird ein AP ausgelöst (Alles-oder-Nichts-Prinzip)." },
+      { category: "Neurobiologie", question: "Saltatorische Erregungsleitung – Vorteil und Mechanismus", answer: "Nur bei Myelinisierung. Das AP springt von Schnürring zu Schnürring (Ranvier). Vorteil: schneller, energieeffizienter." },
+      { category: "Neurobiologie", question: "Ablauf an der chemischen Synapse (Transmitterfreisetzung)", answer: "AP → Ca2+-Einstrom über spannungsgesteuerte Kanäle → Vesikel fusionieren → Transmitter (z.B. Acetylcholin) in den Spalt → Bindung an Rezeptoren → postsynaptisches Potential (EPSP/IPSP)." },
+      { category: "Neurobiologie", question: "EPSP vs. IPSP – Wirkung und Ionen", answer: "EPSP (erregend): Na+-Einstrom → Depolarisation. IPSP (hemmend): Cl--Einstrom oder K+-Ausstrom → Hyperpolarisation." },
+      { category: "Neurobiologie", question: "Räumliche und zeitliche Summation – Unterschied", answer: "Räumlich: gleichzeitige Reize an verschiedenen Synapsen. Zeitlich: aufeinanderfolgende Reize an derselben Synapse. Beide summieren sich am Axonhügel." },
+      { category: "Neurobiologie", question: "Tetrodotoxin (Kugelfisch) – Wirkmechanismus", answer: "Blockiert spannungsgesteuerte Natrium-Kanäle → keine Aktionspotentiale → Lähmung." },
+      { category: "Neurobiologie", question: "Curare – Wirkung an der Synapse", answer: "Besetzt die Acetylcholin-Rezeptoren (nikotinisch) ohne sie zu öffnen → keine Depolarisation → Lähmung." },
+      { category: "Neurobiologie", question: "Sarin – Wirkmechanismus", answer: "Hemmt die Acetylcholinesterase (spaltet Acetylcholin nicht mehr) → dauerhafte Erregung → Krämpfe, Tod." },
+      { category: "Neurobiologie", question: "Signaltransduktion am Auge – Dunkelstrom vs. Belichtung", answer: "Dunkel: cGMP an Na+-Kanäle → offen → Depolarisation → Hemmung. Licht: cGMP löst sich → Kanäle schließen → Hyperpolarisation → keine Hemmung mehr → Aktivierung." },
+      { category: "Neurobiologie", question: "Stäbchen vs. Zapfen – Funktion", answer: "Stäbchen: Hell-Dunkel-Sehen (hohe Lichtempfindlichkeit). Zapfen: Farbsehen (Rot, Grün, Blau) – weniger empfindlich." },
+      { category: "Neurobiologie", question: "Akkommodation des Auges – Nah- und Fernakkommodation", answer: "Nah: Ziliarmuskel kontrahiert → Zonulafasern erschlaffen → Linse wird kugeliger (Brechkraft ↑). Fern: Ziliarmuskel erschlafft → Zonulafasern gespannt → Linse abgeflacht (Brechkraft ↓)." },
+
+      // ===================== ENZYME (Kinetik, Hemmung, Regulation) =====================
+      { category: "Enzyme", question: "Was beschreibt die Substratsättigungskurve?", answer: "Bei steigender Substratkonzentration steigt die Reaktionsgeschwindigkeit bis zur Sättigung (Vmax). Der KM-Wert ist die Substratkonzentration bei halber Maximalgeschwindigkeit." },
+      { category: "Enzyme", question: "Temperaturabhängigkeit der Enzymaktivität – Optimum und Denaturierung", answer: "Optimum meist 35-40°C. Ab ca. 40°C Denaturierung (Raumstruktur geht verloren). Extremophile Bakterien (heiße Quellen) haben Optimum bei ~100°C." },
+      { category: "Enzyme", question: "pH-Abhängigkeit von Enzymen – Beispiele", answer: "Die meisten Enzyme: pH-Optimum neutral (7). Pepsin (Magen): pH 2. Trypsin (Darm): pH 9." },
+      { category: "Enzyme", question: "Kompetitive vs. nicht-kompetitive Hemmung – Unterschied", answer: "Kompetitiv: Hemmstoff ähnelt Substrat und bindet ans aktive Zentrum (überwindbar durch mehr Substrat). Nicht-kompetitiv: Hemmstoff bindet allosterisch → verändert aktives Zentrum (nicht überwindbar)." },
+      { category: "Enzyme", question: "Endprodukthemmung (Feedback-Hemmung) – Prinzip", answer: "Das Endprodukt einer Stoffwechselkette hemmt ein frühes Enzym (negativer Rückkopplung). Verhindert Überproduktion." },
+      { category: "Enzyme", question: "Irreversible Enzymhemmung – Beispiel", answer: "Vergiftung (z.B. Schwermetalle, bestimmte Gifte) binden kovalent oder zerstören das Enzym dauerhaft." },
+
+      // ===================== HUMANBIOLOGIE / SPORT (Energiebereitstellung, Atmung) =====================
+      { category: "Humanbiologie", question: "ATP-Reserven im Muskel – wie lange reichen sie?", answer: "Nur ca. 2-3 Sekunden. Dann Kreatinphosphat (bis 25 s), dann anaerobe Glykolyse (60-90 s), dann aerobe Oxidation (ab 90 s)." },
+      { category: "Humanbiologie", question: "Was sagt die anaerobe Schwelle aus?", answer: "Die Belastung ist so hoch, dass die Zellatmung allein den Energiebedarf nicht deckt → zusätzlich Milchsäuregärung. Je später sie einsetzt, desto trainierter." },
+      { category: "Humanbiologie", question: "Kurzfristige vs. langfristige Anpassung an Belastung – Beispiele", answer: "Kurzfristig: höhere Herz-/Atemfrequenz, Schweißbildung. Langfristig: größeres Herz, mehr Blutkapillaren, mehr rote Blutkörperchen, größeres Lungenvolumen." }
+    ];
+    const fullData = flashcardsData;
+    let shownAnswers = new Array(fullData.length).fill(false);
+    let currentFilter = "all";
+
+    function renderCards(filter = "all") {
+        const container = document.getElementById("cardsContainer");
+        const filtered = fullData.filter(card => filter === "all" || card.category === filter);
+        document.getElementById("cardCountDisplay").innerText = `${filtered.length} Karten (gesamt ${fullData.length})`;
+        if (filtered.length === 0) { container.innerHTML = `<div style="background:white; border-radius:30px; padding:2rem;">✨ Keine Karten ✨</div>`; return; }
+        container.innerHTML = filtered.map((card, idx) => {
+            const originalIndex = fullData.findIndex(c => c.question === card.question && c.answer === card.answer);
+            const isShown = shownAnswers[originalIndex];
+            return `
+                <div class="flashcard" data-card-idx="${originalIndex}">
+                    <div class="card-inner">
+                        <span class="card-category">${card.category}</span>
+                        <div class="question-area">❓ ${card.question}</div>
+                        ${isShown ? `<div class="answer-area"><strong>📘 Antwort:</strong><br>${card.answer}</div>` : `<div style="text-align:center;"><button class="show-answer-btn" data-idx="${originalIndex}">🔎 Antwort anzeigen</button></div>`}
+                        <div class="card-footer"><span>🧠 Karteikarte</span><span>✔️ zum Lernen</span></div>
+                    </div>
+                </div>
+            `;
+        }).join("");
+        document.querySelectorAll(".show-answer-btn").forEach(btn => {
+            btn.addEventListener("click", (e) => { e.stopPropagation(); const idx = parseInt(btn.getAttribute("data-idx")); if (!isNaN(idx)) { shownAnswers[idx] = true; renderCards(currentFilter); } });
+        });
+        document.querySelectorAll(".flashcard").forEach(card => {
+            card.addEventListener("click", (e) => { if(e.target.classList.contains("show-answer-btn")) return; const idxAttr = card.getAttribute("data-card-idx"); if(idxAttr && !shownAnswers[parseInt(idxAttr)]) { shownAnswers[parseInt(idxAttr)] = true; renderCards(currentFilter); } });
+        });
+    }
+
+    function initFilters() {
+        document.querySelectorAll(".filter-btn").forEach(btn => {
+            btn.addEventListener("click", () => {
+                document.querySelectorAll(".filter-btn").forEach(b => b.classList.remove("active"));
+                btn.classList.add("active");
+                currentFilter = btn.getAttribute("data-filter");
+                renderCards(currentFilter);
+            });
+        });
+        document.getElementById("resetAllBtn").addEventListener("click", () => { shownAnswers.fill(false); renderCards(currentFilter); });
+    }
+
+    // ===================== STRUKTURABFRAGE MIT EXTERNEN BILDERN (KORRIGIERTE URLs) =====================
+    // Struktur-Definitionen: Bild-URL (mit Standard-Thumbnail-Größe 960px), markierte Struktur, Synonyme
+    // Korrigierte Struktur-Definitionen
+    const structures = [
+        {
+            id: "neuron",
+            name: "Neuron (Nervenzelle)",
+            imageUrl: "https://upload.wikimedia.org/wikipedia/commons/thumb/6/65/Complete_neuron_cell_diagram_en.svg/960px-Complete_neuron_cell_diagram_en.svg.png",
+            targets: [
+                { name: "Dendriten", synonyms: ["dendrit", "dendriten"] },
+                { name: "Soma (Zellkörper)", synonyms: ["soma", "zellkörper", "zellkoerper"] },
+                { name: "Axon", synonyms: ["axon", "neurit"] },
+                { name: "Myelinscheide", synonyms: ["myelin", "myelinscheide"] },
+                { name: "Synapsen", synonyms: ["synapse", "synapsen"] }
+            ],
+            questionPrefix: "Welche Struktur ist im Neuron markiert?"
+        },
+        {
+            id: "chloroplast",
+            name: "Chloroplast",
+            imageUrl: "https://upload.wikimedia.org/wikipedia/commons/thumb/7/7e/Chloroplast_diagram.svg/960px-Chloroplast_diagram.svg.png",
+            targets: [
+                { name: "Thylakoid", synonyms: ["thylakoid", "thylakoide"] },
+                { name: "Stroma", synonyms: ["stroma"] },
+                { name: "Granum", synonyms: ["granum", "grana"] },
+                { name: "Chloroplastenmembran", synonyms: ["hüllmembran", "doppelmembran"] }
+            ],
+            questionPrefix: "Welche Struktur ist im Chloroplasten markiert?"
+        },
+        {
+            id: "mitochondrium",
+            name: "Mitochondrium",
+            imageUrl: "https://upload.wikimedia.org/wikipedia/commons/thumb/7/7c/Mitochondrial_structure_no_text.svg/960px-Mitochondrial_structure_no_text.svg.png",
+            targets: [
+                { name: "Cristae", synonyms: ["cristae", "crista"] },
+                { name: "Matrix", synonyms: ["matrix"] },
+                { name: "Innere Membran", synonyms: ["innere membran", "innenmembran"] },
+                { name: "Äußere Membran", synonyms: ["äußere membran", "außenmembran"] }
+            ],
+            questionPrefix: "Welche Struktur ist im Mitochondrium markiert?"
+        },
+        {
+            id: "blatt",
+            name: "Blattquerschnitt",
+            imageUrl: "https://upload.wikimedia.org/wikipedia/commons/thumb/f/f2/Leaf_Tissue_Structure.svg/960px-Leaf_Tissue_Structure.svg.png",
+            targets: [
+                { name: "Palisadengewebe", synonyms: ["palisadengewebe", "palisadenparenchym"] },
+                { name: "Schwammgewebe", synonyms: ["schwammgewebe", "schwammparenchym"] },
+                { name: "Kutikula", synonyms: ["kutikula", "cuticula"] },
+                { name: "Epidermis", synonyms: ["epidermis", "oberhaut"] },
+                { name: "Stomata", synonyms: ["stomata", "spaltöffnung"] }
+            ],
+            questionPrefix: "Welche Schicht/Gewebeart ist im Blattquerschnitt markiert?"
+        }
+    ];
+    
+    let currentStructureIndex = 0;
+    let currentTargetIndex = 0;
+    let currentStructure = structures[currentStructureIndex];
+    let currentTarget = currentStructure.targets[currentTargetIndex];
+
+    // DOM-Elemente (müssen im HTML existieren)
+    const structureImage = document.getElementById("structureImage");
+    const structureQuestion = document.getElementById("structureQuestion");
+    const structureAnswerInput = document.getElementById("structureAnswerInput");
+    const structureFeedback = document.getElementById("structureFeedback");
+    const checkBtn = document.getElementById("checkStructureBtn");
+    const nextBtn = document.getElementById("nextStructureBtn");
+    const selectorBtns = document.querySelectorAll(".struct-select-btn");
+
+    function updateStructureDisplay() {
+        currentStructure = structures[currentStructureIndex];
+        currentTarget = currentStructure.targets[currentTargetIndex];
+        structureImage.src = currentStructure.imageUrl;
+        structureImage.alt = currentStructure.name;
+        structureQuestion.innerHTML = `${currentStructure.questionPrefix}<br><strong>➡️ ${currentTarget.name} ?</strong>`;
+        structureAnswerInput.value = "";
+        structureFeedback.innerHTML = "";
+        structureFeedback.className = "feedback";
+
+        // Aktiven Button hervorheben
+        selectorBtns.forEach(btn => {
+            btn.classList.remove("active-struct");
+            if (btn.getAttribute("data-struct-id") === currentStructure.id) {
+                btn.classList.add("active-struct");
+            }
+        });
+    }
+
+    function nextTargetInCurrentStructure() {
+        currentTargetIndex = (currentTargetIndex + 1) % currentStructure.targets.length;
+        currentTarget = currentStructure.targets[currentTargetIndex];
+        structureQuestion.innerHTML = `${currentStructure.questionPrefix}<br><strong>➡️ ${currentTarget.name} ?</strong>`;
+        structureAnswerInput.value = "";
+        structureFeedback.innerHTML = "";
+        structureFeedback.className = "feedback";
+    }
+
+    function switchStructure(structureId) {
+        const newIndex = structures.findIndex(s => s.id === structureId);
+        if (newIndex !== -1) {
+            currentStructureIndex = newIndex;
+            currentTargetIndex = 0;
+            currentStructure = structures[currentStructureIndex];
+            currentTarget = currentStructure.targets[currentTargetIndex];
+            updateStructureDisplay();
+        }
+    }
+
+    function checkStructureAnswer() {
+        const userAnswer = structureAnswerInput.value.trim().toLowerCase().replace(/[^a-zäöüß]/g, '');
+        const isMatch = currentTarget.synonyms.some(syn =>
+            userAnswer.includes(syn.toLowerCase()) || syn.toLowerCase() === userAnswer
+        );
+
+        if (isMatch) {
+            structureFeedback.innerHTML = `✅ Richtig! «${currentTarget.name}» ist korrekt. Gut gemacht!`;
+            structureFeedback.className = "feedback correct-feedback";
+            // Automatisch zur nächsten Struktur im gleichen Bild wechseln
+            setTimeout(() => {
+                nextTargetInCurrentStructure();
+            }, 1200);
+        } else {
+            structureFeedback.innerHTML = `❌ Falsch. Die gesuchte Struktur ist <strong>${currentTarget.name}</strong>. Versuche es beim nächsten Mal!`;
+            structureFeedback.className = "feedback wrong-feedback";
+        }
+    }
+
+    function initStructureQuiz() {
+        // Struktur-Auswahl-Buttons
+        selectorBtns.forEach(btn => {
+            btn.addEventListener("click", () => {
+                const structId = btn.getAttribute("data-struct-id");
+                switchStructure(structId);
+            });
+        });
+
+        checkBtn.addEventListener("click", checkStructureAnswer);
+        nextBtn.addEventListener("click", nextTargetInCurrentStructure);
+
+        updateStructureDisplay();
+    }
+
+    // Starten, wenn DOM geladen ist
+    document.addEventListener("DOMContentLoaded", initStructureQuiz);
+
+    renderCards("all");
+    initFilters();
+    initStructureQuiz();
+</script>
+</body>
+</html>
